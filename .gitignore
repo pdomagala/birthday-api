@@ -3,6 +3,9 @@
 /vendor/bundle
 /lib/bundler/man/
 
+# Rspec
+.rspec
+
 # SQLite database files
 *.db
 *.sqlite

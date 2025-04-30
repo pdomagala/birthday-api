@@ -1,0 +1,21 @@
+# Environment normalization
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl
+
+# macOS
+.DS_Store
+
+# IDE files
+.vscode/

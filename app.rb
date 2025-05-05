@@ -10,6 +10,8 @@ ENVIRONMENT = ENV['ENVIRONMENT'] || 'development'
 
 # Configuration
 configure do
+  set :host_authorization, { permitted_hosts: [] }
+  
   # Setup database connection
   if ENVIRONMENT == 'development'
     # Local SQLite database

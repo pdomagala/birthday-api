@@ -85,6 +85,8 @@ bundle exec rspec
 
 This application is designed to run on AWS ECS Fargate with DynamoDB as the database backend. Infrastructure is defined using Terraform.
 
+![image diagram](./diagram.png)
+
 ### Deployment
 
 1. Set up AWS credentials:

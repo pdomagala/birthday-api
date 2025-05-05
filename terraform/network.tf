@@ -1,4 +1,5 @@
 # This Terraform configuration sets up the network infrastructure for the birthday-app
+# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs - Flow logs disabled intentionally
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support = true
@@ -53,21 +54,23 @@ resource "aws_route_table_association" "public" {
 }
 
 # Security Group for ECS service
+# tfsec:ignore:aws-ec2-no-public-ingress-sgr - Public access is required for this security group
+# tfsec:ignore:aws-ec2-no-public-egress-sgr - Outbound internet access is required
 resource "aws_security_group" "ecs_sg" {
   name        = "birthday-app-ecs-sg"
   description = "Security group for birthday-app ECS service"
   vpc_id      = aws_vpc.main.id
 
-  # Allow inbound traffic from ALB
   ingress {
+    description = "Allow inbound traffic from ALB"
     from_port   = 4567
     to_port     = 4567
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
-  # Allow outbound traffic to ALB
   ingress {
+    description = "Allow inbound traffic from ALB"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -75,6 +78,7 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"

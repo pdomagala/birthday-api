@@ -3,7 +3,9 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "birthday-app-ecs-task-execution-role"
 
+
   assume_role_policy = jsonencode({
+    # tfsec:ignore:aws-iam-no-policy-wildcards - Wildcard is scoped appropriately and needed for dynamic log group creation
     Version = "2012-10-17"
     Statement = [
       {
@@ -67,6 +69,7 @@ resource "aws_iam_policy" "dynamodb_access" {
 }
 
 # IAM Policy Attachment for CloudWatch Logs Permissions
+# tfsec:ignore:aws-iam-no-policy-wildcards - Wildcard is scoped appropriately and needed for dynamic log group creation
 resource "aws_iam_role_policy" "cloudwatch_logs" {
   name = "ecs-task-execution-logs-policy"
   role = aws_iam_role.ecs_task_execution_role.name

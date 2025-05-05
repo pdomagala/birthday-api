@@ -1,25 +1,30 @@
 # Create an ECR repository for the application
+# tfsec:ignore:aws-ecr-repository-customer-key - AWS-managed key is sufficient for our use case
 resource "aws_ecr_repository" "app_repo" {
   name                 = "birthday-app-repo"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
     scan_on_push = true
   }
 }
 
+# tfsec:ignore:aws-cloudwatch-log-group-encrypted - Encryption not required for non-sensitive logs
+# tfsec:ignore:aws-cloudwatch-log-group-customer-key - As above
 resource "aws_cloudwatch_log_group" "ecs_birthday_app" {
   name              = "/ecs/birthday-app"
   retention_in_days = 7
 }
 
 # ALB for ECS service
+# tfsec:ignore:aws-elb-alb-not-public - Public-facing ALB is required for external access
 resource "aws_lb" "app_lb" {
-  name               = "birthday-app-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.ecs_sg.id]
-  subnets            = aws_subnet.public[*].id
+  name                       = "birthday-app-alb"
+  drop_invalid_header_fields = true
+  internal                   = false
+  load_balancer_type         = "application"
+  security_groups            = [aws_security_group.ecs_sg.id]
+  subnets                    = aws_subnet.public[*].id
 
   tags = {
     Name = "birthday-app-alb"
@@ -48,10 +53,11 @@ resource "aws_lb_target_group" "app_tg" {
 }
 
 # ALB Listener
+# tfsec:ignore:aws-elb-http-not-used - Intentional use of HTTP to avoid ACM/Custom Domain
 resource "aws_lb_listener" "app_listener" {
   load_balancer_arn = aws_lb.app_lb.arn
   port              = 80
-  protocol          = "HTTP"
+  protocol = "HTTP"
 
   default_action {
     type             = "forward"
